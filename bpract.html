@@ -1,0 +1,29 @@
+
+
+<B>Boundary Effects:</B> Many radiomic features can be affected by the treatment of pixels/voxels at the border of a chosen region-of-interest (ROI). For example, if a ROI delineated the boundaries of a distinct and brightly-enhancing tumor on a MRI scan, texture values at the border of that ROI may display artificially-high contrast. Many different methods of dealing with this effect have been proposed:<br>
+<ul>
+
+<li> Eroding ROIs for the purpose of intensity feature calculation, such that high-contrast edge values are excluded from one’s analysis.</li>
+<br>
+<li> Select a spherical sub-ROI of constant size from the center of the given ROI, such that boundary effects are ignored.</li>
+
+<br>
+<li> Redefine texture calculation implementations such that neighboring intensities on the outside of the ROI are ignored.</li>
+</ul>
+
+Failure to follow these methods may cause many texture features to strongly correlate with the surface area of a given ROI, as the border-contrast effect may predominate over genuine texture signal. Developers should also take caution that they do not mask regions outside of the given ROI to a constant value, e.g. 0, and calculate textures at the border without modification. This may cause extreme intensity differentials at the border, again overwhelming genuine patterns in texture signal.
+
+<br>
+<br>
+<B>Intensity Normalization:</B> Some medical imaging modalities, such as CT scans, may be normalized to a set range of values, making the task of image normalization trivial. Others, such as many MRI sequences, will have a variable range of intensities that may not be on the same scale between patient visits. This requires that radiomics developers adopt normalization techniques in order for their features to be transferable to images in an unseen dataset.
+
+Some radiomics packages use within-ROI normalization. In this case, intensities within an ROI are scaled only relative to other intensities within the ROI. This can cause unexpected behavior, as outlier values of high or low intensity will have a much greater capacity to affect the output of the normalization scheme, especially in the case of small ROIs. Normalizing with respect to all values in a given volume or organ will lead to more consistent intensity values across images.
+<br>
+<br>
+<B>Feature Normalization:</B> Some features may scale with ROI volume if normalization is not internally implemented. For example, the default MATLAB implementation of Gray-Level Contrast Matrices does not normalize their output for image sizes, meaning that GLCM values will strongly correlate with ROI volume. Volume calculations themselves may differ between packages, if they are not normalized to the mm3 resolution of the data. 
+
+<br>
+<br>
+<B>Resolution and Resampling:</B> Medical imaging datasets often include data at different resolutions. The value of certain features, such as real volume, may change according to the resolution of this data; care should be taken to read resolution information from the metadata of a medical imaging file accordingly. Certain features may also change at different resolutions -- texture features calculated between neighboring pixels/voxels will have a different meaning at 1mm resolution than at 6mm resolution. Resampling data to the same resolution may also introduce artificial effects on features depending on the chosen method of interpolation. 
+
+
